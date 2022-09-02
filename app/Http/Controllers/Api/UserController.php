@@ -52,4 +52,47 @@ class UserController extends Controller
 
         
     }
+
+
+    public function multipeUserAdd(Request $request){
+        $data = $request->all();
+        $rules = [ 
+            'name' => 'required',
+            'email' => 'required | email | unique:users',
+            'password' => 'required',
+        ];
+
+        $customMessages = [
+            'name.required' => 'name is required',
+            'email.required' => 'email is required',
+            'email.email' => 'email is must be valid',
+            'password.required' => 'password is required',
+        ];
+
+        
+        
+        foreach ($request->users as $key => $value) {
+            
+            $validator = Validator::make($value,$rules,$customMessages);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(),422);
+            }else{
+                $user = new User();
+                $user->name = $value['name'];
+                $user->email = $value['email'];
+                $user->password = Hash::make($value['password']);
+                $user->save();
+                $message = 'Data inserted successfully';
+            }
+        }
+        return response()->json($message);
+
+        
+        
+
+        
+
+
+    }
 }
