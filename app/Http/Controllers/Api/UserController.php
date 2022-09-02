@@ -87,12 +87,44 @@ class UserController extends Controller
             }
         }
         return response()->json($message);
+    }
 
+    public function userUpdate(Request $request,$id){
+      $data =  User::where('id',$id)->update([
+            'name' => $request->name,
+        ]);
+        // $data = $request->all();
+        // $user = User::find($id);
+        // $user->name = $data['name'];
+        // $user->password = Hash::make($data['password']);
+        // $user->save();
+        return response()->json($data);
+    }
+
+    public function user_destroy(Request $request, $id)
+    {
+        
+     $header = $request->header('Authorization');
+     if($header == ''){
+            $message = "you have not any key!!!";
+            return response()->json(['message'=>$message]);
+     }else{
+        if($header == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6InJpciByYWtpYiIsImlhdCI6MTUxNjIzOTAyMn0.a_Bn-lySBFJ0snSMSqjTGTPBRAiPzsR6RlNeyBZjMKg"){
+            $data = User::find($id);
+            if($data){
+                $data->delete();
+                $message = "Data deleted successfully";
+                return response()->json(['message'=>$message]);
+            }else{
+                $message = "not find id";
+                return response()->json(['message'=>$message]);
+            }
+        }else{
+                $message = "envalid access key";
+                return response()->json(['message'=>$message]);
+        }
+     }
         
         
-
-        
-
-
     }
 }
